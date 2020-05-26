@@ -8,10 +8,9 @@
         <div style="padding:30px">
             <form action="CityChoice" method="post">
                 <select class="selectpicker" data-live-search="true" title="Choose city" name="citychoice">
-                    <option data-tokens="ketchup mustard" value="kiev">Kiev</option>
-                    <option data-tokens="mustard" value="krakow" disabled>Krakow</option>
-                    <option data-tokens="frosting" value="london" disabled>London</option>
-                    <option data-tokens="frosting" value="istanbul" disabled>Istanbul</option>
+                    {%  for city in cities_list %}
+                        <option value="{{city.alias_name}}">{{city.name}}</option>
+                    {% endfor %}
                 </select>
                 {% csrf_token %}
                 <input type="submit" value="See Air Quality Prediction" class="btn btn-success" style="margin:10px">

@@ -1,6 +1,6 @@
 import logging
 import abc
-import air_pollution_project.air_pollution_app.bl.log.logger
+from ..log import logger
 
 
 logger = logging.getLogger('Collector')

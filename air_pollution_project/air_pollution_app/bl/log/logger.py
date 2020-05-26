@@ -25,5 +25,3 @@ logger.addHandler(file_logger)
 console_logger = logging.StreamHandler()
 console_logger.setFormatter(formatter)
 logger.addHandler(console_logger)
-
-

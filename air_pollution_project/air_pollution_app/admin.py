@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import AirPollutionDataItem, SomeData
+from .models import City
 # Register your models here.
 
-admin.site.register(AirPollutionDataItem)
-admin.site.register(SomeData)
+admin.site.register(City)

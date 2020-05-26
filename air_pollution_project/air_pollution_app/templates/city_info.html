@@ -3,32 +3,53 @@
 
 <div class="jumbotron text-center vertical-center" style="margin-bottom:0; height: 120vh;">
     <div>
-        <h1 style="font-family: Roboto Slab; color: #545D3D; font-weight: bold; font-size: 44px;">Air Quality Index - {{city}}</h1>
+        <h1 style="font-family: Roboto Slab; color: #545D3D; font-weight: bold; font-size: 200%;">Air Quality Index - {{city}}</h1>
         {% load static %}
-        <img style="padding-top: 4vh; padding-bottom: 9vh;" src="/static/images/quality_level.svg"></img>
+        <img style="padding-top: 4vh; padding-bottom: 9vh; width: 75%; max-width: 60vh;" src="/static/images/quality_level.svg"></img>
 
 
-        <div style="display: block; margin-left: auto; margin-right: auto; align: center; width:60%;">
+        <div style="display: block; margin-left: auto; margin-right: auto; align: center; width:80%;">
             <div id="googleMap" style="height:50vh;"></div>
 
             <script>
             function myMap() {
-                var mapProp= {
-                  center:new google.maps.LatLng({{ lat }}, {{ lon }}),
-                  zoom:10,
-                };
+                var myLatLng = {lat: {{ lat }}, lng: {{ lon }}};
 
-                var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+                var map = new google.maps.Map(document.getElementById("googleMap"), {
+                    center: myLatLng,
+                    zoom:10
+                });
 
                 var marker = new google.maps.Marker({
-                      position: google.maps.LatLng({{ lat }}, {{ lon }}),
+                      position: myLatLng,
                       map: map,
-                      title: '{{city}}'
+                      title: 'AQI: {{city}}'
                 });
             }
             </script>
 
-            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7g2AwJUQZ2lNJlNKX0rzLRV1r4fmGVEU&callback=myMap"></script>
+            <script src="https://maps.googleapis.com/maps/api/js?key=XXXXXX&callback=myMap"></script>
+        </div>
+
+        <div style="padding-top: 10vh; display: block; margin-left: auto; margin-right: auto; align: center;">
+            <table style="width:60%; align: center; margin: auto;">
+              <tr>
+                <th>Temperature</th>
+                <th>Humidity</th>
+                <th>AQI</th>
+              </tr>
+              <tr>
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+              </tr>
+              <tr>
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+              </tr>
+            </table>
+<!--            {{weather}}-->
         </div>
     </div>
 </div>

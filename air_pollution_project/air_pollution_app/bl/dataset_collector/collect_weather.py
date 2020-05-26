@@ -1,8 +1,8 @@
 import logging
 import requests
-import air_pollution_project.air_pollution_app.bl.log.logger
-from air_pollution_project.air_pollution_app.bl.dataset_collector.base_collector import ICollector
 
+from ..log import logger
+from ..dataset_collector.base_collector import ICollector
 
 logger = logging.getLogger('Collector')
 
@@ -35,4 +35,3 @@ class WeatherCollector(ICollector):
             logger.error(f'WeatherCollector API request failed: {e}')
         except KeyError as e:
             logger.error(f'Failed to get coordinates for {city}: {e}')
-

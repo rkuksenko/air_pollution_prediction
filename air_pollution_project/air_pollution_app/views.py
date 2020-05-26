@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .bl.city import City
-#from air_pollution_project.air_pollution_app.bl.city import City
+from .models import City as CityData
+from .bl.csv_to_html_convertor import CsvToHtmlWeatherConverter
 
 
 def index(request):
@@ -8,12 +9,19 @@ def index(request):
 
 
 def predict(request):
-    return render(request, 'predict.html', {})
+    cities_list = CityData.objects.all()
+    print(len(cities_list))
+
+    return render(request, 'predict.html', {'cities_list': cities_list})
 
 
 def handle_city(request):
     city = City(request.POST['citychoice'])
     lat, lon = city.get_location()
 
-    return render(request, 'city_info.html', {'city': city.get_name(), 'lon': lon, 'lat': lat})
+    w = CsvToHtmlWeatherConverter()
+    weather = w.convert()
+    print(weather)
+
+    return render(request, 'city_info.html', {'city': city.get_name(), 'lon': lon, 'lat': lat, 'weather': weather})
 

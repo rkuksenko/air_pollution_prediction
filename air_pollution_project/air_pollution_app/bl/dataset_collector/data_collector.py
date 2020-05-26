@@ -25,35 +25,37 @@ class DataCollector:
 
     def _collect_aqi(self, city: str):
         logging.info('Going to collect AQI data!')
-        row_aqi_data = self.aqi_collector.get_data(city)
-        with open(DataCollector.AQI_DATA_JSON_FILE, 'w') as f:
-            f.write(row_aqi_data)
+        # row_aqi_data = self.aqi_collector.get_data(city)
+        # with open(DataCollector.AQI_DATA_JSON_FILE, 'w') as f:
+        #     f.write(row_aqi_data)
 
-        # data_json = DataCollector._get_json(DataCollector.AQI_DATA_JSON_FILE)
+        data_json = DataCollector._get_json(DataCollector.AQI_DATA_JSON_FILE)
 
-        data_json = json.loads(row_aqi_data)
+        # data_json = json.loads(row_aqi_data)
         data_json = data_json['data']
 
         normalized_data = pd.json_normalize(data_json)
+        print(normalized_data)
         normalized_data.to_csv(DataCollector.AQI_DATA_CSV_FILE)
 
         logging.info('AQI data saved to a aqi_data.csv')
 
     def _collect_weather(self, city: str):
         logging.info('Going to collect Weather data!')
-        row_weather_data = self.weather_collector.get_data(city)
+        # row_weather_data = self.weather_collector.get_data(city)
+        #
+        # with open(DataCollector.WEATHER_DATA_JSON_FILE, 'w') as f:
+        #     f.write(row_weather_data)
 
-        with open(DataCollector.WEATHER_DATA_JSON_FILE, 'w') as f:
-            f.write(row_weather_data)
-
-        data_json = json.loads(row_weather_data)
-        # data_json = DataCollector._get_json(DataCollector.WEATHER_DATA_JSON_FILE)
+        # data_json = json.loads(row_weather_data)
+        data_json = DataCollector._get_json(DataCollector.WEATHER_DATA_JSON_FILE)
 
         data_json = data_json['hourly']['data']
         for sample in data_json:
             sample['time'] = datetime.utcfromtimestamp(int(sample['time'])).strftime('%Y-%m-%d %H:%M:%S')
 
         normalized_data = pd.json_normalize(data_json)
+        print(normalized_data)
 
         normalized_data.to_csv(DataCollector.WEATHER_DATA_CSV_FILE)
         logging.info('Weather data saved to a weather_data.csv')
