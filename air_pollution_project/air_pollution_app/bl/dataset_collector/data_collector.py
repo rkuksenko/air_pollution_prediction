@@ -23,25 +23,68 @@ class DataCollector:
         self.aqi_collector = AqiCollector()
         self.weather_collector = WeatherCollector()
 
+    @staticmethod
+    def _normalize_aqi_dataframe(data_json: json):
+        data_json = data_json['data']
+
+        # unify time format to a '%Y-%m-%d/%H:%M'
+        for sample in data_json:
+            t = datetime.strptime(sample['datetime'], '%Y-%m-%d:%H')
+            sample['datetime'] = t.strftime('%Y-%m-%d/%H:%M')
+
+        # remove column with names: ID, timestamp_utc, timestamp_local
+        normalized_data = pd.json_normalize(data_json)
+        normalized_data = normalized_data.drop(['timestamp_utc', 'timestamp_local'], axis=1)
+        normalized_data = normalized_data.drop(index=0, axis=1)
+
+        # move column with datetime to a 0 position
+        data_column = normalized_data.pop('datetime')
+        normalized_data.insert(0, 'datetime', data_column)
+
+        return normalized_data
+
+    @staticmethod
+    def _normalize_weather_dataframe(data_json: json):
+        data_json = data_json['hourly']['data']
+
+        # unify time format to a '%Y-%m-%d/%H:%M'
+        for sample in data_json:
+            sample['time'] = datetime.utcfromtimestamp(int(sample['time'])).strftime('%Y-%m-%d/%H:%M')
+
+        # remove column with names: ID, summary, icon, precipType
+        normalized_data = pd.json_normalize(data_json)
+        normalized_data = normalized_data.drop(['summary', 'icon', 'precipType'], axis=1)
+        normalized_data = normalized_data.drop(index=0, axis=1)   # ID
+
+        # move column with time to a 0 position
+        data_column = normalized_data.pop('time')
+        normalized_data.insert(0, 'time', data_column)
+
+        return normalized_data
+
     def _collect_aqi(self, city: str):
         logging.info('Going to collect AQI data!')
+
+        # make API request
         # row_aqi_data = self.aqi_collector.get_data(city)
         # with open(DataCollector.AQI_DATA_JSON_FILE, 'w') as f:
         #     f.write(row_aqi_data)
 
         data_json = DataCollector._get_json(DataCollector.AQI_DATA_JSON_FILE)
-
         # data_json = json.loads(row_aqi_data)
-        data_json = data_json['data']
 
-        normalized_data = pd.json_normalize(data_json)
-        print(normalized_data)
-        normalized_data.to_csv(DataCollector.AQI_DATA_CSV_FILE)
+        # normalize json data to a dataframe
+        normalized_data = DataCollector._normalize_aqi_dataframe(data_json)
+
+        # save json into CSV file
+        normalized_data.to_csv(DataCollector.AQI_DATA_CSV_FILE, index=False)
 
         logging.info('AQI data saved to a aqi_data.csv')
 
     def _collect_weather(self, city: str):
         logging.info('Going to collect Weather data!')
+
+        # make API request
         # row_weather_data = self.weather_collector.get_data(city)
         #
         # with open(DataCollector.WEATHER_DATA_JSON_FILE, 'w') as f:
@@ -50,14 +93,11 @@ class DataCollector:
         # data_json = json.loads(row_weather_data)
         data_json = DataCollector._get_json(DataCollector.WEATHER_DATA_JSON_FILE)
 
-        data_json = data_json['hourly']['data']
-        for sample in data_json:
-            sample['time'] = datetime.utcfromtimestamp(int(sample['time'])).strftime('%Y-%m-%d %H:%M:%S')
+        # normalize json data to a dataframe
+        normalized_data = DataCollector._normalize_weather_dataframe(data_json)
 
-        normalized_data = pd.json_normalize(data_json)
-        print(normalized_data)
-
-        normalized_data.to_csv(DataCollector.WEATHER_DATA_CSV_FILE)
+        # save json into CSV file
+        normalized_data.to_csv(DataCollector.WEATHER_DATA_CSV_FILE, index=False)
         logging.info('Weather data saved to a weather_data.csv')
 
     @staticmethod
